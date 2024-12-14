@@ -13,6 +13,20 @@ public class AdminResource {
     }
 
     public static void addRoom(Collection<IRoom> rooms) {
-        ReservationService.addRoom();
+        for (IRoom room: rooms) {
+            ReservationService.addRoom(room);
+        }
+    }
+
+    public static Collection<IRoom> getAllRooms() {
+        return ReservationService.findAllRooms();
+    }
+
+    public static Collection<Customer> getAllCustomers() {
+        return CustomerService.getAllCustomers();
+    }
+
+    public static void displayAllReservations() {
+        ReservationService.printAllReservation();
     }
 }

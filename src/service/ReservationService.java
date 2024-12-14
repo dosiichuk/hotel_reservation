@@ -53,11 +53,15 @@ public class ReservationService {
         return availableRooms;
     }
 
+    public static Collection<IRoom> findAllRooms() {
+        return rooms;
+    }
+
     public static Collection<Reservation> getCustomerReservation(Customer customer) {
         return reservations.stream().filter(reservation -> reservation.getCustomer() == customer).toList();
     }
 
-    public void printAllReservation() {
+    public static void printAllReservation() {
         for (Reservation reservation: reservations) {
             System.out.println(reservation);
         }
