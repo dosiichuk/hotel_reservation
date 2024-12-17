@@ -12,12 +12,11 @@ public class CustomerService {
             Customer customer = new Customer(firstName, lastName, email);
             customers.add(customer);
         } catch (Exception e) {
-            System.out.println("Invalid email");
+            System.out.println("Invalid data for account creation");
         }
     }
 
     public static Customer getCustomer(String customerEmail) {
-        // Return the customer with the given email
         for (Customer customer : customers) {
             if (customer.getEmail().equals(customerEmail)) {
                 return customer;

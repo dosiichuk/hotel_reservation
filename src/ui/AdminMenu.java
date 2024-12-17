@@ -1,6 +1,7 @@
 package ui;
 
 import api.AdminResource;
+import model.customer.Customer;
 import model.room.IRoom;
 import model.room.RoomType;
 
@@ -13,10 +14,13 @@ public class AdminMenu {
         boolean isRunning = true;
         while (isRunning) {
             displayMenu();
-            int userInput = scanner.nextInt();
+            int userInput = Integer.parseInt(scanner.nextLine());
             switch (userInput) {
                 case 1:
-                    System.out.println("All customers:");
+                    Collection<Customer> customers = AdminResource.getAllCustomers();
+                    for (Customer customer : customers) {
+                        System.out.println(customer);
+                    }
                     break;
                 case 2:
                     Collection<IRoom> rooms = AdminResource.getAllRooms();
@@ -54,17 +58,17 @@ public class AdminMenu {
 
     public static void addRoom(Scanner scanner) {
         System.out.println("Enter room number");
-        String roomNumber = scanner.next();
+        String roomNumber = scanner.nextLine();
         System.out.println("Enter price per night");
-        Double price = scanner.nextDouble();
+        Double price = Double.parseDouble(scanner.nextLine());
         System.out.println("Enter room type (1 for single bed, 2 for double bed)");
-        int roomType = scanner.nextInt();
+        int roomType = Integer.parseInt(scanner.nextLine());
         AdminResource.addRoom(roomNumber, price, RoomType.getRoomType(roomType));
         System.out.println("Would you like to add another room? (y/n)");
-        String response = scanner.next();
+        String response = scanner.nextLine();
         while (!response.equals("y") && !response.equals("n")) {
             System.out.println("Please enter 'Y' (Yes) or 'N' (No)");
-            response = scanner.next();
+            response = scanner.nextLine();
         }
         if (response.equals("y")) {
             addRoom(scanner);
