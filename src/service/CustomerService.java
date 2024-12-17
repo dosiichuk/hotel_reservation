@@ -2,7 +2,6 @@ package service;
 
 import model.customer.Customer;
 
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Collection;
 

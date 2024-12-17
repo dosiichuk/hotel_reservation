@@ -3,6 +3,8 @@ package service;
 import model.customer.Customer;
 import model.reservation.Reservation;
 import model.room.IRoom;
+import model.room.Room;
+import model.room.RoomType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,6 +13,11 @@ import java.util.Date;
 public class ReservationService {
     private static Collection<Reservation> reservations =  new ArrayList<>();
     private static Collection<IRoom> rooms = new ArrayList<>();
+
+    public static void createAndAddRoom(String roomNumber, Double price, RoomType roomType) {
+        rooms.add(new Room(roomNumber, price, roomType, true));
+    }
+
     public static void addRoom(IRoom room) {
         rooms.add(room);
     }
