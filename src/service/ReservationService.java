@@ -14,12 +14,8 @@ public class ReservationService {
     private static Collection<Reservation> reservations =  new ArrayList<>();
     private static Collection<IRoom> rooms = new ArrayList<>();
 
-    public static void createAndAddRoom(String roomNumber, Double price, RoomType roomType) {
+    public static void addRoom(String roomNumber, Double price, RoomType roomType) {
         rooms.add(new Room(roomNumber, price, roomType, true));
-    }
-
-    public static void addRoom(IRoom room) {
-        rooms.add(room);
     }
 
     public static IRoom getRoom(String roomNumber) {
@@ -31,12 +27,15 @@ public class ReservationService {
         return null;
     }
 
-    public static void reserveRoom(Customer customer, IRoom room, Date checkInDate, Date checkOutDate) {
+    public static Reservation reserveRoom(Customer customer, IRoom room, Date checkInDate, Date checkOutDate) {
         try {
-            reservations.add(new Reservation(customer, room, checkInDate, checkOutDate));
+            Reservation reservation = new Reservation(customer, room, checkInDate, checkOutDate);
+            reservations.add(reservation);
+            return reservation;
         } catch (Exception e){
             System.out.println("Failure to create reservation");
         }
+        return null;
     }
 
     public static Collection<IRoom> findRooms(Date checkInDate, Date checkOutDate) {
@@ -45,7 +44,7 @@ public class ReservationService {
             boolean isAvailable = true;
             for (Reservation reservation : reservations) {
                 if (reservation.getRoom().equals(room) &&
-                        !(checkOutDate.before(reservation.getCheckInDate()) || checkInDate.after(reservation.getCheckOutDate()))) {
+                        (!(checkOutDate.before(reservation.getCheckInDate()) || checkInDate.after(reservation.getCheckOutDate())))) {
                     isAvailable = false;
                     break;
                 }
@@ -53,8 +52,6 @@ public class ReservationService {
             if (isAvailable) {
                 availableRooms.add(room);
             }
-
-            return availableRooms;
         }
         return availableRooms;
     }
@@ -67,9 +64,7 @@ public class ReservationService {
         return reservations.stream().filter(reservation -> reservation.getCustomer() == customer).toList();
     }
 
-    public static void printAllReservation() {
-        for (Reservation reservation: reservations) {
-            System.out.println(reservation);
-        }
+    public static  Collection<Reservation> getAllReservations() {
+        return reservations;
     }
 }

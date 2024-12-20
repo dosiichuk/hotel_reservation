@@ -1,6 +1,7 @@
 package api;
 
 import model.customer.Customer;
+import model.reservation.Reservation;
 import model.room.IRoom;
 import model.room.RoomType;
 import service.CustomerService;
@@ -14,7 +15,7 @@ public class AdminResource {
     }
 
     public static void addRoom(String roomNumber, double price, RoomType roomType) {
-        ReservationService.createAndAddRoom(roomNumber, price, roomType);
+        ReservationService.addRoom(roomNumber, price, roomType);
     }
 
     public static Collection<IRoom> getAllRooms() {
@@ -25,7 +26,7 @@ public class AdminResource {
         return CustomerService.getAllCustomers();
     }
 
-    public static void displayAllReservations() {
-        ReservationService.printAllReservation();
+    public static Collection<Reservation> getAllReservations() {
+        return ReservationService.getAllReservations();
     }
 }

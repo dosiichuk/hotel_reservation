@@ -4,8 +4,6 @@ import api.HotelResource;
 import model.customer.Customer;
 import model.reservation.Reservation;
 import model.room.IRoom;
-import service.CustomerService;
-import service.ReservationService;
 
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -16,26 +14,30 @@ public class MainMenu {
     public static void takeUserInput(Scanner scanner) {
         while (true) {
             displayMenu();
-            int choice = Integer.parseInt(scanner.nextLine());
-            switch (choice) {
-                case 1:
-                    findAndReserveRoom(scanner);
-                    break;
-                case 2:
-                    seeMyReservations(scanner);
-                    break;
-                case 3:
-                    createAccount(scanner);
-                    break;
-                case 4:
-                    AdminMenu.takeUserInput(scanner);
-                    break;
-                case 5:
-                    System.exit(0);
-                    break;
-                default:
-                    System.out.println("Invalid input");
-                    break;
+            try {
+                int choice = Integer.parseInt(scanner.nextLine());
+                switch (choice) {
+                    case 1:
+                        findAndReserveRoom(scanner);
+                        break;
+                    case 2:
+                        seeMyReservations(scanner);
+                        break;
+                    case 3:
+                        createAccount(scanner);
+                        break;
+                    case 4:
+                        AdminMenu.takeUserInput(scanner);
+                        break;
+                    case 5:
+                        System.exit(0);
+                        break;
+                    default:
+                        System.out.println("Invalid input");
+                        break;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input");
             }
         }
     }
@@ -58,12 +60,17 @@ public class MainMenu {
         String firstName = scanner.nextLine();
         System.out.println("Enter your last name");
         String lastName = scanner.nextLine();
-        CustomerService.addCustomer(email, firstName, lastName);
-        return CustomerService.getCustomer(email);
+        HotelResource.createACustomer(email, firstName, lastName);
+        return HotelResource.getCustomer(email);
 
     }
 
     public static void findAndReserveRoom(Scanner scanner) {
+        Collection<IRoom> rooms = HotelResource.findARoom(new Date(), new Date());
+        if (rooms.isEmpty()) {
+            System.out.println("No rooms available");
+            return;
+        }
         System.out.println("Enter check-in date mm/dd/yyyy example 01/01/2024");
         String checkInInput = scanner.nextLine();
         System.out.println("Enter check-out date mm/dd/yyyy example 01/01/2024");
@@ -77,7 +84,15 @@ public class MainMenu {
             System.out.println("Invalid date format");
             return;
         }
-        Collection<IRoom> availableRooms = ReservationService.findRooms(checkInDate, checkOutDate);
+        if (checkInDate.after(checkOutDate)) {
+            System.out.println("Check-in date must be before check-out date");
+            return;
+        }
+        if (checkInDate.before(new Date())) {
+            System.out.println("Check-in date must be in the future");
+            return;
+        }
+        Collection<IRoom> availableRooms = HotelResource.findARoom(checkInDate, checkOutDate);
         if (availableRooms.isEmpty()) {
             System.out.println("No rooms available for the selected dates");
             return;
@@ -87,7 +102,7 @@ public class MainMenu {
             System.out.println(room);
         }
         System.out.println("Would you like to reserve a room? (y/n)");
-        String reserve = scanner.nextLine();
+        String reserve = scanner.nextLine().toLowerCase();
         if (!reserve.equals("y") && !reserve.equals("n")) {
             System.out.println("Invalid input");
             return;
@@ -96,14 +111,14 @@ public class MainMenu {
             return;
         }
         System.out.println("Do you have an account? (y/n)");
-        String hasAccount = scanner.nextLine();
+        String hasAccount = scanner.nextLine().toLowerCase();
         if (!hasAccount.equals("y") && !hasAccount.equals("n")) {
             System.out.println("Invalid input");
             return;
         }
         if (hasAccount.equals("y")) {
             System.out.println("Enter your email address");
-            String email = scanner.nextLine();
+            String email = scanner.nextLine().toLowerCase();
             Customer customer = HotelResource.getCustomer(email);
             if (customer == null) {
                 System.out.println("Invalid email address");
@@ -117,16 +132,20 @@ public class MainMenu {
                 return;
             }
             HotelResource.bookARoom(email, room, checkInDate, checkOutDate);
+            System.out.println("Room booked successfully");
+            return;
         } else {
             Customer customer = createAccount(scanner);
             System.out.println("Enter room number");
             String roomNumber = scanner.nextLine();
-            IRoom room = ReservationService.getRoom(roomNumber);
+            IRoom room = HotelResource.getRoom(roomNumber);
             if (room == null || !availableRooms.contains(room)) {
                 System.out.println("Invalid room number");
                 return;
             }
-            ReservationService.reserveRoom(customer, room, checkInDate, checkOutDate);
+            HotelResource.bookARoom(customer.getEmail(), room, checkInDate, checkOutDate);
+            System.out.println("Room booked successfully");
+            return;
         }
     }
 
@@ -134,10 +153,13 @@ public class MainMenu {
         System.out.println("Enter your email address");
         String email = scanner.nextLine();
         Collection<Reservation> reservations = HotelResource.getCustomerReservations(email);
+        if (reservations.isEmpty()) {
+            System.out.println("No reservations found for the email address");
+            return;
+        }
+        System.out.println("Your reservations:");
         for (Reservation reservation : reservations) {
             System.out.println(reservation);
         }
     }
-
-
 }

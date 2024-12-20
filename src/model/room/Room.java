@@ -38,5 +38,22 @@ public class Room  implements IRoom{
         return isFree;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Room)) {
+            return false;
+        }
+        Room room = (Room) obj;
+        return roomNumber.equals(room.roomNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return roomNumber.hashCode();
+    }
+
 
 }

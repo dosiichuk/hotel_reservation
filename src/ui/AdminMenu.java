@@ -1,7 +1,9 @@
 package ui;
 
 import api.AdminResource;
+import api.HotelResource;
 import model.customer.Customer;
+import model.reservation.Reservation;
 import model.room.IRoom;
 import model.room.RoomType;
 
@@ -14,32 +16,30 @@ public class AdminMenu {
         boolean isRunning = true;
         while (isRunning) {
             displayMenu();
-            int userInput = Integer.parseInt(scanner.nextLine());
-            switch (userInput) {
-                case 1:
-                    Collection<Customer> customers = AdminResource.getAllCustomers();
-                    for (Customer customer : customers) {
-                        System.out.println(customer);
-                    }
-                    break;
-                case 2:
-                    Collection<IRoom> rooms = AdminResource.getAllRooms();
-                    for (IRoom room : rooms) {
-                        System.out.println(room);
-                    }
-                    break;
-                case 3:
-                    seeAllReservations();
-                    break;
-                case 4:
-                    addRoom(scanner);
-                    break;
-                case 5:
-                    isRunning = false;
-                    break;
-                default:
-                    System.out.println("Invalid input. Please try again.");
-                    break;
+            try {
+                int choice = Integer.parseInt(scanner.nextLine());
+                switch (choice) {
+                    case 1:
+                        seeAllCustomers();
+                        break;
+                    case 2:
+                        seeAllRooms();
+                        break;
+                    case 3:
+                        seeAllReservations();
+                        break;
+                    case 4:
+                        addRoom(scanner);
+                        break;
+                    case 5:
+                        isRunning = false;
+                        break;
+                    default:
+                        System.out.println("Invalid input");
+                        break;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input");
             }
         }
     }
@@ -59,13 +59,36 @@ public class AdminMenu {
     public static void addRoom(Scanner scanner) {
         System.out.println("Enter room number");
         String roomNumber = scanner.nextLine();
+        if (HotelResource.getRoom(roomNumber) != null) {
+            System.out.println("Room already exists");
+            return;
+        }
+        try {
+            Integer.parseInt(roomNumber);
+        } catch (NumberFormatException e) {
+            System.out.println("Room number must be a number");
+            return;
+        }
         System.out.println("Enter price per night");
-        Double price = Double.parseDouble(scanner.nextLine());
+        Double price;
+        try {
+            price = Double.parseDouble(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Price must be a number");
+            return;
+        }
         System.out.println("Enter room type (1 for single bed, 2 for double bed)");
-        int roomType = Integer.parseInt(scanner.nextLine());
+        int roomType;
+        try {
+            roomType = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Room type must be a number");
+            return;
+        }
         AdminResource.addRoom(roomNumber, price, RoomType.getRoomType(roomType));
+        System.out.println("Room added successfully");
         System.out.println("Would you like to add another room? (y/n)");
-        String response = scanner.nextLine();
+        String response = scanner.nextLine().toLowerCase();
         while (!response.equals("y") && !response.equals("n")) {
             System.out.println("Please enter 'Y' (Yes) or 'N' (No)");
             response = scanner.nextLine();
@@ -76,6 +99,38 @@ public class AdminMenu {
     }
 
     public static void seeAllReservations() {
-        AdminResource.displayAllReservations();
+        Collection<Reservation> reservations = AdminResource.getAllReservations();
+        if (reservations.isEmpty()) {
+            System.out.println("No reservations found");
+            return;
+        }
+        System.out.println("All reservations:");
+        for (Reservation reservation : reservations) {
+            System.out.println(reservation);
+        }
+    }
+
+    public static void seeAllCustomers() {
+        Collection<Customer> customers = AdminResource.getAllCustomers();
+        if (customers.isEmpty()) {
+            System.out.println("No customers found");
+            return;
+        }
+        System.out.println("All customers:");
+        for (Customer customer : customers) {
+            System.out.println(customer);
+        }
+    }
+
+    public static void seeAllRooms() {
+        Collection<IRoom> rooms = AdminResource.getAllRooms();
+        if (rooms.isEmpty()) {
+            System.out.println("No rooms found");
+            return;
+        }
+        System.out.println("All rooms:");
+        for (IRoom room : rooms) {
+            System.out.println(room);
+        }
     }
 }
