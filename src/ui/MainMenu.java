@@ -1,5 +1,8 @@
 package ui;
 
+import api.HotelResource;
+import model.customer.Customer;
+import model.reservation.Reservation;
 import model.room.IRoom;
 import service.CustomerService;
 import service.ReservationService;
@@ -16,10 +19,10 @@ public class MainMenu {
             int choice = Integer.parseInt(scanner.nextLine());
             switch (choice) {
                 case 1:
-                    System.out.println("Find and reserve a room");
+                    findAndReserveRoom(scanner);
                     break;
                 case 2:
-                    System.out.println("See my reservations");
+                    seeMyReservations(scanner);
                     break;
                 case 3:
                     createAccount(scanner);
@@ -48,7 +51,7 @@ public class MainMenu {
         System.out.println("Please select a number for the menu option");
     }
 
-    public static void createAccount(Scanner scanner) {
+    public static Customer createAccount(Scanner scanner) {
         System.out.println("Enter your email address");
         String email = scanner.nextLine();
         System.out.println("Enter your first name");
@@ -56,6 +59,8 @@ public class MainMenu {
         System.out.println("Enter your last name");
         String lastName = scanner.nextLine();
         CustomerService.addCustomer(email, firstName, lastName);
+        return CustomerService.getCustomer(email);
+
     }
 
     public static void findAndReserveRoom(Scanner scanner) {
@@ -92,9 +97,46 @@ public class MainMenu {
         }
         System.out.println("Do you have an account? (y/n)");
         String hasAccount = scanner.nextLine();
+        if (!hasAccount.equals("y") && !hasAccount.equals("n")) {
+            System.out.println("Invalid input");
+            return;
+        }
+        if (hasAccount.equals("y")) {
+            System.out.println("Enter your email address");
+            String email = scanner.nextLine();
+            Customer customer = HotelResource.getCustomer(email);
+            if (customer == null) {
+                System.out.println("Invalid email address");
+                return;
+            }
+            System.out.println("Enter room number");
+            String roomNumber = scanner.nextLine();
+            IRoom room = HotelResource.getRoom(roomNumber);
+            if (room == null || !availableRooms.contains(room)) {
+                System.out.println("Invalid room number");
+                return;
+            }
+            HotelResource.bookARoom(email, room, checkInDate, checkOutDate);
+        } else {
+            Customer customer = createAccount(scanner);
+            System.out.println("Enter room number");
+            String roomNumber = scanner.nextLine();
+            IRoom room = ReservationService.getRoom(roomNumber);
+            if (room == null || !availableRooms.contains(room)) {
+                System.out.println("Invalid room number");
+                return;
+            }
+            ReservationService.reserveRoom(customer, room, checkInDate, checkOutDate);
+        }
+    }
 
-
-
+    public static void seeMyReservations(Scanner scanner) {
+        System.out.println("Enter your email address");
+        String email = scanner.nextLine();
+        Collection<Reservation> reservations = HotelResource.getCustomerReservations(email);
+        for (Reservation reservation : reservations) {
+            System.out.println(reservation);
+        }
     }
 
 

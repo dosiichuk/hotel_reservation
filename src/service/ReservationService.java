@@ -31,13 +31,12 @@ public class ReservationService {
         return null;
     }
 
-    public static Reservation reserveRoom(Customer customer, IRoom room, Date checkInDate, Date checkOutDate) {
+    public static void reserveRoom(Customer customer, IRoom room, Date checkInDate, Date checkOutDate) {
         try {
-            return new Reservation(customer, room, checkInDate, checkOutDate);
+            reservations.add(new Reservation(customer, room, checkInDate, checkOutDate));
         } catch (Exception e){
             System.out.println("Failure to create reservation");
         }
-        return null;
     }
 
     public static Collection<IRoom> findRooms(Date checkInDate, Date checkOutDate) {

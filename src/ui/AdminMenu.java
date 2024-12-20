@@ -29,7 +29,7 @@ public class AdminMenu {
                     }
                     break;
                 case 3:
-                    System.out.println("All reservations:");
+                    seeAllReservations();
                     break;
                 case 4:
                     addRoom(scanner);
@@ -73,5 +73,9 @@ public class AdminMenu {
         if (response.equals("y")) {
             addRoom(scanner);
         }
+    }
+
+    public static void seeAllReservations() {
+        AdminResource.displayAllReservations();
     }
 }
