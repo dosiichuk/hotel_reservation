@@ -6,11 +6,11 @@ public class Room  implements IRoom{
     private final RoomType roomType;
     private boolean isFree;
 
-    public Room(String roomNumber, Double price, RoomType roomType, boolean isFree) {
+    public Room(String roomNumber, Double price, RoomType roomType) {
         this.roomNumber = roomNumber;
         this.price = price;
         this.roomType = roomType;
-        this.isFree = isFree;
+        this.isFree = price == 0.0;
     }
 
     @Override

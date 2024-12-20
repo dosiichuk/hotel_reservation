@@ -9,6 +9,11 @@ public class CustomerService {
     private static final Collection<Customer> customers = new ArrayList<>();
     public static void addCustomer(String email, String firstName, String lastName) {
         try {
+            Customer existingCustomer = getCustomer(email);
+            if (existingCustomer != null) {
+                System.out.println("Customer already exists");
+                return;
+            }
             Customer customer = new Customer(firstName, lastName, email);
             customers.add(customer);
         } catch (Exception e) {

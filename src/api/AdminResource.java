@@ -29,4 +29,8 @@ public class AdminResource {
     public static Collection<Reservation> getAllReservations() {
         return ReservationService.getAllReservations();
     }
+
+    public static void populateData() {
+        ReservationService.populateData();
+    }
 }

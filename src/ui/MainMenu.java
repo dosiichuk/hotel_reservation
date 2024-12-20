@@ -95,9 +95,16 @@ public class MainMenu {
         Collection<IRoom> availableRooms = HotelResource.findARoom(checkInDate, checkOutDate);
         if (availableRooms.isEmpty()) {
             System.out.println("No rooms available for the selected dates");
+            System.out.println("Searching for available rooms 7 days after the check-in and check-out date");
+            checkInDate = new Date(checkInDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+            checkOutDate = new Date(checkOutDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+            availableRooms = HotelResource.findARoom(checkInDate, checkOutDate);
+        }
+        if (availableRooms.isEmpty()) {
+            System.out.println("No rooms available for the selected dates" + checkInDate + "-" + checkOutDate);
             return;
         }
-        System.out.println("Available rooms:");
+        System.out.println("Available rooms for the dates " + checkInDate + "-" + checkOutDate);
         for (IRoom room : availableRooms) {
             System.out.println(room);
         }

@@ -13,9 +13,10 @@ import java.util.Date;
 public class ReservationService {
     private static Collection<Reservation> reservations =  new ArrayList<>();
     private static Collection<IRoom> rooms = new ArrayList<>();
+    private static boolean isPopulatedWithTestData = false;
 
     public static void addRoom(String roomNumber, Double price, RoomType roomType) {
-        rooms.add(new Room(roomNumber, price, roomType, true));
+        rooms.add(new Room(roomNumber, price, roomType));
     }
 
     public static IRoom getRoom(String roomNumber) {
@@ -66,5 +67,32 @@ public class ReservationService {
 
     public static  Collection<Reservation> getAllReservations() {
         return reservations;
+    }
+
+    public static void populateRooms() {
+        rooms.add(new Room("101", 100.0, RoomType.SINGLE));
+        rooms.add(new Room("102", 200.0, RoomType.DOUBLE));
+        rooms.add(new Room("103", 300.0, RoomType.DOUBLE));
+    }
+
+    public static void populateReservations() {
+        reservations.add(new Reservation(CustomerService.getCustomer("gmail@gmail.com"), getRoom("101"), new Date(125, 1, 1), new Date(125, 1, 2)));
+        reservations.add(new Reservation(CustomerService.getCustomer("gmail@gmail.com"), getRoom("102"), new Date(125, 1, 1), new Date(125, 1, 2)));
+    }
+
+    public static void populateCustomers() {
+        CustomerService.addCustomer("gmail@gmail.com", "John", "Doe");
+    }
+
+    public static void populateData() {
+        if (isPopulatedWithTestData) {
+            System.out.println("Data already populated");
+            return;
+        }
+        populateRooms();
+        populateCustomers();
+        populateReservations();
+        isPopulatedWithTestData = true;
+        System.out.println("Data populated successfully");
     }
 }

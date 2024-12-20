@@ -34,6 +34,9 @@ public class AdminMenu {
                     case 5:
                         isRunning = false;
                         break;
+                    case 6:
+                        AdminResource.populateData();
+                        break;
                     default:
                         System.out.println("Invalid input");
                         break;
@@ -52,6 +55,7 @@ public class AdminMenu {
         System.out.println("3. See all reservations");
         System.out.println("4. Add a room");
         System.out.println("5. Back to Main Menu");
+        System.out.println("6. Populate the app with test data");
         System.out.println("---------------------------");
         System.out.println("Please select a number for the menu option");
     }
