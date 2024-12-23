@@ -1,15 +1,26 @@
 package model.room;
 
-public class Room  implements IRoom{
+public class Room implements IRoom {
     private final String roomNumber;
     private Double price;
     private final RoomType roomType;
     private boolean isFree;
 
-    public Room(String roomNumber, Double price, RoomType roomType) {
+    public Room(String roomNumber, Double price, Integer roomType) {
+        this.roomType = RoomType.getRoomType(roomType);
+        if (this.roomType == null) {
+            throw new IllegalArgumentException("Invalid room type");
+        }
+        try {
+            Integer.parseInt(roomNumber);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid room number");
+        }
+        if (price < 0) {
+            throw new IllegalArgumentException("Price cannot be negative");
+        }
         this.roomNumber = roomNumber;
         this.price = price;
-        this.roomType = roomType;
         this.isFree = price == 0.0;
     }
 
@@ -54,6 +65,4 @@ public class Room  implements IRoom{
     public int hashCode() {
         return roomNumber.hashCode();
     }
-
-
 }

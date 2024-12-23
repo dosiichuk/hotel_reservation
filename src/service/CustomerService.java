@@ -6,8 +6,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class CustomerService {
-    private static final Collection<Customer> customers = new ArrayList<>();
-    public static void addCustomer(String email, String firstName, String lastName) {
+    private static final CustomerService instance = new CustomerService();
+    private final Collection<Customer> customers = new ArrayList<>();
+
+    private CustomerService() {
+    }
+
+    public void addCustomer(String email, String firstName, String lastName) {
         try {
             Customer existingCustomer = getCustomer(email);
             if (existingCustomer != null) {
@@ -21,7 +26,7 @@ public class CustomerService {
         }
     }
 
-    public static Customer getCustomer(String customerEmail) {
+    public Customer getCustomer(String customerEmail) {
         for (Customer customer : customers) {
             if (customer.getEmail().equals(customerEmail)) {
                 return customer;
@@ -30,7 +35,11 @@ public class CustomerService {
         return null;
     }
 
-    public static Collection<Customer> getAllCustomers() {
+    public Collection<Customer> getAllCustomers() {
         return customers;
+    }
+
+    public static CustomerService getInstance() {
+        return instance;
     }
 }

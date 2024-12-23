@@ -1,5 +1,6 @@
 package ui;
 
+import api.AdminResource;
 import api.HotelResource;
 import model.customer.Customer;
 import model.reservation.Reservation;
@@ -11,7 +12,15 @@ import java.util.Date;
 import java.util.Scanner;
 
 public class MainMenu {
-    public static void takeUserInput(Scanner scanner) {
+    private static final MainMenu instance = new MainMenu();
+    private final AdminMenu adminMenu = AdminMenu.getInstance();
+    private final HotelResource hotelResource = HotelResource.getInstance();
+    private final AdminResource adminResource = AdminResource.getInstance();
+
+    private MainMenu() {
+    }
+
+    public void takeUserInput(Scanner scanner) {
         while (true) {
             displayMenu();
             try {
@@ -27,7 +36,7 @@ public class MainMenu {
                         createAccount(scanner);
                         break;
                     case 4:
-                        AdminMenu.takeUserInput(scanner);
+                        adminMenu.takeUserInput(scanner);
                         break;
                     case 5:
                         System.exit(0);
@@ -42,7 +51,7 @@ public class MainMenu {
         }
     }
 
-    public static void displayMenu() {
+    public void displayMenu() {
         System.out.println("---------------------------");
         System.out.println("1. Find and reserve a room");
         System.out.println("2. See my reservations");
@@ -53,20 +62,20 @@ public class MainMenu {
         System.out.println("Please select a number for the menu option");
     }
 
-    public static Customer createAccount(Scanner scanner) {
+    public Customer createAccount(Scanner scanner) {
         System.out.println("Enter your email address");
         String email = scanner.nextLine();
         System.out.println("Enter your first name");
         String firstName = scanner.nextLine();
         System.out.println("Enter your last name");
         String lastName = scanner.nextLine();
-        HotelResource.createACustomer(email, firstName, lastName);
-        return HotelResource.getCustomer(email);
+        hotelResource.createACustomer(email, firstName, lastName);
+        return hotelResource.getCustomer(email);
 
     }
 
-    public static void findAndReserveRoom(Scanner scanner) {
-        Collection<IRoom> rooms = HotelResource.findARoom(new Date(), new Date());
+    public void findAndReserveRoom(Scanner scanner) {
+        Collection<IRoom> rooms = hotelResource.findARoom(new Date(), new Date());
         if (rooms.isEmpty()) {
             System.out.println("No rooms available");
             return;
@@ -92,13 +101,13 @@ public class MainMenu {
             System.out.println("Check-in date must be in the future");
             return;
         }
-        Collection<IRoom> availableRooms = HotelResource.findARoom(checkInDate, checkOutDate);
+        Collection<IRoom> availableRooms = hotelResource.findARoom(checkInDate, checkOutDate);
         if (availableRooms.isEmpty()) {
             System.out.println("No rooms available for the selected dates");
             System.out.println("Searching for available rooms 7 days after the check-in and check-out date");
             checkInDate = new Date(checkInDate.getTime() + 7 * 24 * 60 * 60 * 1000);
             checkOutDate = new Date(checkOutDate.getTime() + 7 * 24 * 60 * 60 * 1000);
-            availableRooms = HotelResource.findARoom(checkInDate, checkOutDate);
+            availableRooms = hotelResource.findARoom(checkInDate, checkOutDate);
         }
         if (availableRooms.isEmpty()) {
             System.out.println("No rooms available for the selected dates" + checkInDate + "-" + checkOutDate);
@@ -126,40 +135,40 @@ public class MainMenu {
         if (hasAccount.equals("y")) {
             System.out.println("Enter your email address");
             String email = scanner.nextLine().toLowerCase();
-            Customer customer = HotelResource.getCustomer(email);
+            Customer customer = hotelResource.getCustomer(email);
             if (customer == null) {
                 System.out.println("Invalid email address");
                 return;
             }
             System.out.println("Enter room number");
             String roomNumber = scanner.nextLine();
-            IRoom room = HotelResource.getRoom(roomNumber);
+            IRoom room = hotelResource.getRoom(roomNumber);
             if (room == null || !availableRooms.contains(room)) {
                 System.out.println("Invalid room number");
                 return;
             }
-            HotelResource.bookARoom(email, room, checkInDate, checkOutDate);
+            hotelResource.bookARoom(email, room, checkInDate, checkOutDate);
             System.out.println("Room booked successfully");
             return;
         } else {
             Customer customer = createAccount(scanner);
             System.out.println("Enter room number");
             String roomNumber = scanner.nextLine();
-            IRoom room = HotelResource.getRoom(roomNumber);
+            IRoom room = hotelResource.getRoom(roomNumber);
             if (room == null || !availableRooms.contains(room)) {
                 System.out.println("Invalid room number");
                 return;
             }
-            HotelResource.bookARoom(customer.getEmail(), room, checkInDate, checkOutDate);
+            hotelResource.bookARoom(customer.getEmail(), room, checkInDate, checkOutDate);
             System.out.println("Room booked successfully");
             return;
         }
     }
 
-    public static void seeMyReservations(Scanner scanner) {
+    public void seeMyReservations(Scanner scanner) {
         System.out.println("Enter your email address");
         String email = scanner.nextLine();
-        Collection<Reservation> reservations = HotelResource.getCustomerReservations(email);
+        Collection<Reservation> reservations = hotelResource.getCustomerReservations(email);
         if (reservations.isEmpty()) {
             System.out.println("No reservations found for the email address");
             return;
@@ -168,5 +177,9 @@ public class MainMenu {
         for (Reservation reservation : reservations) {
             System.out.println(reservation);
         }
+    }
+
+    public static MainMenu getInstance() {
+        return instance;
     }
 }

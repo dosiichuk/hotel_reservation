@@ -12,7 +12,14 @@ import java.util.Scanner;
 
 public class AdminMenu {
 
-    public static void takeUserInput(Scanner scanner) {
+    private static final AdminMenu instance = new AdminMenu();
+    private final AdminResource adminResource = AdminResource.getInstance();
+    private final HotelResource hotelResource = HotelResource.getInstance();
+
+    private AdminMenu() {
+    }
+
+    public void takeUserInput(Scanner scanner) {
         boolean isRunning = true;
         while (isRunning) {
             displayMenu();
@@ -35,7 +42,7 @@ public class AdminMenu {
                         isRunning = false;
                         break;
                     case 6:
-                        AdminResource.populateData();
+                        adminResource.populateData();
                         break;
                     default:
                         System.out.println("Invalid input");
@@ -47,7 +54,7 @@ public class AdminMenu {
         }
     }
 
-    public static void displayMenu() {
+    public void displayMenu() {
         System.out.println("Admin Menu");
         System.out.println("---------------------------");
         System.out.println("1. See all customers");
@@ -60,17 +67,11 @@ public class AdminMenu {
         System.out.println("Please select a number for the menu option");
     }
 
-    public static void addRoom(Scanner scanner) {
+    public void addRoom(Scanner scanner) {
         System.out.println("Enter room number");
         String roomNumber = scanner.nextLine();
-        if (HotelResource.getRoom(roomNumber) != null) {
+        if (hotelResource.getRoom(roomNumber) != null) {
             System.out.println("Room already exists");
-            return;
-        }
-        try {
-            Integer.parseInt(roomNumber);
-        } catch (NumberFormatException e) {
-            System.out.println("Room number must be a number");
             return;
         }
         System.out.println("Enter price per night");
@@ -89,8 +90,13 @@ public class AdminMenu {
             System.out.println("Room type must be a number");
             return;
         }
-        AdminResource.addRoom(roomNumber, price, RoomType.getRoomType(roomType));
-        System.out.println("Room added successfully");
+        try {
+            adminResource.addRoom(roomNumber, price, roomType);
+            System.out.println("Room added successfully");
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
         System.out.println("Would you like to add another room? (y/n)");
         String response = scanner.nextLine().toLowerCase();
         while (!response.equals("y") && !response.equals("n")) {
@@ -102,8 +108,8 @@ public class AdminMenu {
         }
     }
 
-    public static void seeAllReservations() {
-        Collection<Reservation> reservations = AdminResource.getAllReservations();
+    public void seeAllReservations() {
+        Collection<Reservation> reservations = adminResource.getAllReservations();
         if (reservations.isEmpty()) {
             System.out.println("No reservations found");
             return;
@@ -114,8 +120,8 @@ public class AdminMenu {
         }
     }
 
-    public static void seeAllCustomers() {
-        Collection<Customer> customers = AdminResource.getAllCustomers();
+    public void seeAllCustomers() {
+        Collection<Customer> customers = adminResource.getAllCustomers();
         if (customers.isEmpty()) {
             System.out.println("No customers found");
             return;
@@ -126,8 +132,8 @@ public class AdminMenu {
         }
     }
 
-    public static void seeAllRooms() {
-        Collection<IRoom> rooms = AdminResource.getAllRooms();
+    public void seeAllRooms() {
+        Collection<IRoom> rooms = adminResource.getAllRooms();
         if (rooms.isEmpty()) {
             System.out.println("No rooms found");
             return;
@@ -136,5 +142,9 @@ public class AdminMenu {
         for (IRoom room : rooms) {
             System.out.println(room);
         }
+    }
+
+    public static AdminMenu getInstance() {
+        return instance;
     }
 }

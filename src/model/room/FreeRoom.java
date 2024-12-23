@@ -1,7 +1,7 @@
 package model.room;
 
 public class FreeRoom extends Room {
-    public FreeRoom(String roomNumber, RoomType roomType) {
+    public FreeRoom(String roomNumber, Integer roomType) {
         super(roomNumber, 0.0, roomType);
     }
 
